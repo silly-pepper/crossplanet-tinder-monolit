@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import ru.se.ifmo.tinder.service.UserRequestService;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user-request")
 @SecurityRequirement(name = "basicAuth")
+@Slf4j
 public class UserRequestController {
     private final UserRequestService userRequestService;
 
@@ -41,11 +43,13 @@ public class UserRequestController {
 
     @ExceptionHandler(value = {IllegalStateException.class})
     public ResponseEntity<?> handleIllegalStateExceptions(RuntimeException ex) {
+        log.error("IllegalStateException occurred: {}", ex.getMessage());
         return ResponseEntity.badRequest().body("Incorrect request: " + ex.getMessage());
     }
 
     @ExceptionHandler(value = {MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<?> handleIncorrectStatusExceptions() {
+    public ResponseEntity<?> handleIncorrectStatusExceptions(MethodArgumentTypeMismatchException ex) {
+        log.error("MethodArgumentTypeMismatchException occurred: {}", ex.getMessage());
         return ResponseEntity.badRequest().body("Incorrect request param 'status'");
     }
 }
