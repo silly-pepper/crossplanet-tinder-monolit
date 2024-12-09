@@ -50,8 +50,8 @@ public class LocationController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<LocationDto>> getAllLocations(@RequestParam int page,
-                                                             @RequestParam @Min(1) @Max(50) int size) {
+    public ResponseEntity<Page<LocationDto>> getAllLocations(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<LocationDto> locationDtoPage = locationService.getAllLocations(pageable);
         return ResponseEntity.ok(locationDtoPage);
