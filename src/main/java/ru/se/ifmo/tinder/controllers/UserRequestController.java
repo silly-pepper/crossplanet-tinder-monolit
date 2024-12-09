@@ -33,8 +33,8 @@ public class UserRequestController {
 
     @GetMapping
     public ResponseEntity<Page<UserRequestDto>> getUsersRequests(@NotNull @RequestParam SearchStatus status,
-                                                                 @NotNull @RequestParam int page,
-                                                                 @NotNull @RequestParam @Min(1) @Max(50) int size) {
+                                                                 @NotNull @RequestParam(defaultValue = "0") int page,
+                                                                 @NotNull @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserRequestDto> requestPage = userRequestService.getUsersRequestsByStatus(status, pageable);
 

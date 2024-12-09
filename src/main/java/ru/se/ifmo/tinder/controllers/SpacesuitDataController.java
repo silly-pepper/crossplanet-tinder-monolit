@@ -60,8 +60,8 @@ public class SpacesuitDataController {
 
     @GetMapping("my")
     public ResponseEntity<Page<SpacesuitDataDto>> getCurrUserSpacesuitData(Principal principal,
-                                                                           @RequestParam int page,
-                                                                           @RequestParam @Min(1) @Max(50) int size) {
+                                                                           @RequestParam(defaultValue = "0") int page,
+                                                                           @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<SpacesuitDataDto> spacesuitDataPage = spacesuitDataService.getCurrentUserSpacesuitData(principal, pageable);
         return ResponseEntity.ok(spacesuitDataPage);

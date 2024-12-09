@@ -50,8 +50,8 @@ public class FabricTextureController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<FabricTextureDto>> getAllFabricTexture(@RequestParam int page,
-                                                                 @RequestParam @Min(1) @Max(50) int size) {
+    public ResponseEntity<Page<FabricTextureDto>> getAllFabricTexture(@RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<FabricTextureDto> fabricTexturePage = fabricTextureService.getAllFabricTexture(pageable);
         return ResponseEntity.ok(fabricTexturePage);

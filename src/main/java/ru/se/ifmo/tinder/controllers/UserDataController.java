@@ -55,8 +55,8 @@ public class UserDataController {
 
     @GetMapping("{locationId}")
     public ResponseEntity<Page<UserDataDto>> getUsersByLocationId(@PathVariable Long locationId,
-                                                                  @RequestParam int page,
-                                                                  @RequestParam @Min(1) @Max(50) int size) {
+                                                                  @RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserDataDto> userDataPage = userDataService.getUsersDataByLocationId(locationId, pageable);
 
@@ -65,8 +65,8 @@ public class UserDataController {
 
     @GetMapping
     public ResponseEntity<Page<UserDataDto>> getAllUsersData(Principal principal,
-                                                             @RequestParam int page,
-                                                             @RequestParam @Min(1) @Max(50) int size) {
+                                                             @RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserDataDto> userDataPage = userDataService.getAllUsersData(principal, pageable);
 
