@@ -11,9 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserDataRepository extends JpaRepository<UserData, Long> {
-    @Query("SELECT u FROM UserData u WHERE u.id <> ?1")
-    List<UserData> findAllUserDataExcludingUserId(Long userDataId);
-
     List<UserData> findAllUserDataByLocationsId(Long locationId);
 
     @Query("SELECT u FROM UserData u WHERE u.ownerUser.username = ?1")
