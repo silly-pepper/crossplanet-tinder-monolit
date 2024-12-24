@@ -3,6 +3,7 @@ package ru.se.info.tinder.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.io.*;
 import java.lang.module.FindException;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
@@ -30,6 +32,9 @@ public class ProfileImageService {
     @SneakyThrows
     public ProfileImageResponse uploadProfileImageByUserDataId(Long userDataId, MultipartFile file) {
         UserData userData = userDataService.getUserDataById(userDataId);
+        if (userData.getProfileImageId() != null) {
+            deleteProfileImageById(userDataId, userData.getProfileImageId());
+        }
         WebSocketImageResponse webSocketImageResponse = sendToImageService(
                 "/images/upload",
                 Arrays.toString(file.getBytes()),
@@ -68,7 +73,23 @@ public class ProfileImageService {
     }
 
     @SneakyThrows
-    public OutputStream getProfileImageById(Long userDataId, String id) {
+    public String getProfileImageUrlById(Long userDataId, String id) {
+        UserData userData = userDataService.getUserDataById(userDataId);
+        WebSocketImageResponse webSocketImageResponse = sendToImageService(
+                "/images/url",
+                id,
+                "/image/url"
+        ).get();
+
+        if (webSocketImageResponse.isSuccess()) {
+            log.info("Get image url by id {}", id);
+            return webSocketImageResponse.getPayload();
+        }
+        throw new FindException(webSocketImageResponse.getPayload());
+    }
+
+    @SneakyThrows
+    public byte[] getProfileImageById(Long userDataId, String id) {
         UserData userData = userDataService.getUserDataById(userDataId);
         WebSocketImageResponse webSocketImageResponse = sendToImageService(
                 "/images/download",
@@ -77,11 +98,8 @@ public class ProfileImageService {
         ).get();
 
         if (webSocketImageResponse.isSuccess()) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(byteArrayOutputStream));
-            printWriter.print(webSocketImageResponse.getPayload());
-            printWriter.flush();
-            return byteArrayOutputStream;
+            log.info("Get image by id {}", id);
+            return Base64.getDecoder().decode(webSocketImageResponse.getPayload());
         }
         throw new FindException(webSocketImageResponse.getPayload());
     }
